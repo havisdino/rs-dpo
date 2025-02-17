@@ -1,0 +1,1 @@
+python dpo_dataset.py --data output_rs --output output_dpo --nprocs 8

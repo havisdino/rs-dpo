@@ -1,0 +1,1 @@
+python score.py --data data_for_rs --nprocs 1 --model dummy --timeout 1.0
