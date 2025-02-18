@@ -10,9 +10,6 @@ from tqdm import tqdm
 from time import sleep
 
 import api
-import api.dummy
-import api.gemini
-import api.gpt
 from scoring_prompts_en import *
 
 
@@ -73,7 +70,8 @@ def scoring_thread(index, model, timeout, output_dir, dataset, pbar=None):
             caller = MODEL_NAME_CALLER_MAPPING[model]
             for response in responses:
                 max_tries = 5
-                for _ in range(max_tries):     # try 10 times
+                # Try 5 times
+                for _ in range(max_tries):
                     try:
                         gpt_response = caller.get_completion(
                             prompt=create_scoring_prompt(messages, response),
@@ -89,7 +87,7 @@ def scoring_thread(index, model, timeout, output_dir, dataset, pbar=None):
                         else:
                             raise e
                 else:
-                    logger.warning("max #tries exceeded. The current response will be skipped")
+                    logger.warning("Max tries exceeded. The current response will be skipped")
             
             scores = [parse_score(score) for score in scores]
             top_idxs = np.argsort(scores)[::-1]
