@@ -10,7 +10,10 @@ from tqdm import tqdm
 from time import sleep
 
 import api
-from scoring_prompts_en import *
+from scoring_prompts_vi import (
+    TASK, EVALUATION_CRITERIA, SCORING_INSTRUCTION, END,
+    create_scoring_prompt
+)
 
 
 logger = logging.getLogger(__name__)
@@ -42,17 +45,6 @@ def parse_score(text):
 
     score = float(matches[-1])
     return score
-
-
-def create_scoring_prompt(messages, response):
-    context = "\n".join([f"{msg["role"]}: {msg["content"]}" for msg in messages[:-1]])
-    context = "\nDialogue history:\n" + context + "\n"
-    
-    reference = "True reference: " + messages[-1]["content"]
-    response = f"Model response: {response}"
-    
-    prompt = "\n".join([TASK, context, reference, response, EVALUATION_CRITERIA, SCORING_INSTRUCTION, END])
-    return prompt
         
 
 def scoring_thread(index, model, timeout, output_dir, dataset, pbar=None):
