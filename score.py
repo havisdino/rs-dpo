@@ -10,10 +10,7 @@ from tqdm import tqdm
 from time import sleep
 
 import api
-from scoring_prompts_vi import (
-    TASK, EVALUATION_CRITERIA, SCORING_INSTRUCTION, END,
-    create_scoring_prompt
-)
+from scoring_prompts_vi import create_scoring_prompt
 
 
 logger = logging.getLogger(__name__)
@@ -38,7 +35,9 @@ def parse_score(text):
     pattern = r"<score>(.*?)</score>"
     matches = re.findall(pattern, text)
 
-    assert len(matches) > 0, "No `<score>*</score>` pattern found"
+    if len(matches) == 0:
+        logger.warning("No `<score>*</score>` pattern found")
+        return 0.0
 
     if len(matches) > 1:
         logger.warning("More than 1 <score>*</score> pattern found. The last pattern will be taken")
