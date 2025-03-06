@@ -29,6 +29,7 @@ MODEL_NAME_CALLER_MAPPING = {
     "o3-mini": api.gpt,
     "gemini-2.0-pro-exp-02-05": api.gemini,
     "gemini-2.0-flash": api.gemini,
+    "gemini-2.0-flash-lite": api.gemini,
     "dummy": api.dummy,
 }
         
