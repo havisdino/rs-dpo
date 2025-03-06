@@ -1,8 +1,9 @@
 from openai import AzureOpenAI
+import os
 
 
 # azure configs
-API_KEY = "..."
+API_KEY = os.environ["API_KEY"]
 API_VERSION = "2024-10-21"
 AZURE_ENDPOINT = "https://batch-4o.openai.azure.com/"
 

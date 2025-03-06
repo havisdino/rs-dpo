@@ -1,7 +1,7 @@
 from google import genai
+import os
 
-
-API_KEY = "..."
+API_KEY = os.environ["API_KEY"]
 
 TEMPERATURE = 0.0
 TOP_P = 0.9
