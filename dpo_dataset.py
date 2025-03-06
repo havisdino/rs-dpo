@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 import threading
 from datasets import load_dataset
 from tqdm import tqdm
+import random
 import json
 import os
 
@@ -11,11 +12,22 @@ def dpo_dataset_from_rs(rs_dataset, output_dir, index=0, pbar=None):
     
     with open(os.path.join(output_dir, f"dpo_data_{index}.jsonl"), "w") as file:
         for sample in rs_dataset:
-            messages = sample["messages"]
+            if all(score == sample["scores"][0] for score in sample["scores"]):
+                if pbar is not None:
+                    pbar.update(1)
+                continue
             
+            messages = sample["messages"]
             conversation = messages[:-1]
+            
             chosen = sample["top_responses"][0]
-            rejected = sample["top_responses"][-1]
+
+            # best vs random strategy
+            best_score = sample["scores"][0]
+            rejected_scores = [score for score in sample["scores"] if score != best_score]
+            rejected_score = random.choice(rejected_scores)
+            rejected_idx = sample["scores"].index(rejected_score)
+            rejected = sample["top_responses"][rejected_idx]
         
             item = {
                 "instruction": "",
