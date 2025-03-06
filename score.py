@@ -9,6 +9,9 @@ from tqdm import tqdm
 from time import sleep
 
 import api
+import api.gemini
+import api.gpt
+import api.dummy
 from scoring_prompts_vi import create_scoring_prompt, parse_score
 
 
