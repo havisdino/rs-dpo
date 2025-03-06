@@ -1,5 +1,4 @@
 import os
-import re
 import logging
 import numpy as np
 from datasets import load_dataset
@@ -10,7 +9,7 @@ from tqdm import tqdm
 from time import sleep
 
 import api
-from scoring_prompts_vi import create_scoring_prompt
+from scoring_prompts_vi import create_scoring_prompt, parse_score
 
 
 logger = logging.getLogger(__name__)
@@ -29,21 +28,6 @@ MODEL_NAME_CALLER_MAPPING = {
     "gemini-2.0-flash": api.gemini,
     "dummy": api.dummy,
 }
-
-
-def parse_score(text):
-    pattern = r"<score>(.*?)</score>"
-    matches = re.findall(pattern, text)
-
-    if len(matches) == 0:
-        logger.warning("No `<score>*</score>` pattern found")
-        return 0.0
-
-    if len(matches) > 1:
-        logger.warning("More than 1 <score>*</score> pattern found. The last pattern will be taken")
-
-    score = float(matches[-1])
-    return score
         
 
 def scoring_thread(index, model, timeout, output_dir, dataset, pbar=None):
