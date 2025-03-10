@@ -78,7 +78,7 @@ def scoring_thread(index, model, timeout, output_dir, dataset, pbar=None):
             
             item = {
                 "id": sample["id"],
-                "type": sample["type"],
+                "type": sample["source"],
                 "messages": messages,
                 "top_responses": top_responses,
                 "scores": sorted(scores)[::-1]

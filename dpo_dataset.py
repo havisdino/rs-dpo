@@ -12,23 +12,35 @@ def dpo_dataset_from_rs(rs_dataset, output_dir, index=0, pbar=None):
     
     with open(os.path.join(output_dir, f"dpo_data_{index}.jsonl"), "w") as file:
         for sample in rs_dataset:
-            if all(score == sample["scores"][0] for score in sample["scores"]):
+            # Remove sample in which all scores are 5 
+            if all(score == sample["scores"][0] == 5 for score in sample["scores"]):
                 if pbar is not None:
                     pbar.update(1)
                 continue
             
+            # If all scores are less than 4, choose the ground truth and randomly reject an output
+            if all(score < 4 for score in sample["scores"]):
+                chosen = sample["messages"][-1]["content"]
+                rejected = random.choice(sample["top_responses"])
+            # If at least 1 score is larger than or equal to 4
+            else:
+                chosen = sample["top_responses"][0]
+                # best vs random strategy
+                best_score = sample["scores"][0]
+                rejected_scores = [score for score in sample["scores"] if score != best_score]
+                
+                # If 4 <= score < 5 and all scores as the same
+                if len(rejected_scores) == 0:
+                    continue
+                
+                rejected_score = random.choice(rejected_scores)
+                rejected_idx = sample["scores"].index(rejected_score)
+                rejected = sample["top_responses"][rejected_idx]
+                
+            
             messages = sample["messages"]
             conversation = messages[:-1]
             
-            chosen = sample["top_responses"][0]
-
-            # best vs random strategy
-            best_score = sample["scores"][0]
-            rejected_scores = [score for score in sample["scores"] if score != best_score]
-            rejected_score = random.choice(rejected_scores)
-            rejected_idx = sample["scores"].index(rejected_score)
-            rejected = sample["top_responses"][rejected_idx]
-        
             item = {
                 "instruction": "",
                 "input": "",
